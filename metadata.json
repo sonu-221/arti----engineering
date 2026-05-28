@@ -1,0 +1,8 @@
+{
+  "name": "ARTI ENGINEERING - Construction Management System",
+  "description": "A comprehensive construction workforce and salary management system featuring role-based access, attendance tracking, and automated salary calculations.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": []
+}

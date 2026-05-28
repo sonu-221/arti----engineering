@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTI ENGINEERING - Workforce Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+        .font-oswald {
+            font-family: 'Oswald', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFB800;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e6a700;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .bg-mesh {
+            background-color: #111827;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(43,100%,50%,0.08) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(43,100%,50%,0.08) 0, transparent 50%);
+        }
+
+        /* Smooth page transitions */
+        .page-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .page-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 400ms, transform 400ms;
+        }
+
+        /* Remove Number Input Arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #salary-slip-printable, #salary-slip-printable * {
+                visibility: visible;
+            }
+            #salary-slip-printable {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        construction: {
+                            yellow: '#FFB800',
+                            dark: '#0F172A',
+                            gray: '#475569',
+                            accent: '#F59E0B'
+                        }
+                    },
+                    borderRadius: {
+                        '3xl': '1.5rem',
+                        '4xl': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="text-construction-dark antialiased">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

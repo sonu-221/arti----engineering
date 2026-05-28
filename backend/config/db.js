@@ -1,0 +1,22 @@
+const mysql = require('mysql2/promise');
+
+// Create connection pool for better performance
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '@Sonu1234',
+  database: 'arti_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+// Test database connection
+pool.getConnection().then((conn) => {
+  console.log('✓ MySQL Database connected successfully!');
+  conn.release();
+}).catch((err) => {
+  console.error('✗ Database connection failed:', err.message);
+});
+
+module.exports = pool;
