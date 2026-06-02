@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { UserRole, UserStatus, User } from '../../types';
-import { db } from '../../services/db';
-import bcrypt from 'bcryptjs';
+import { UserRole } from '../../types';
+import { signupUser } from '../../services/authService';
 import AuthInfoSlider from './AuthInfoSlider';
 import { motion, useAnimation } from 'framer-motion';
 
@@ -94,7 +93,7 @@ const AdminSignup: React.FC<AdminSignupProps> = ({
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -143,53 +142,30 @@ const AdminSignup: React.FC<AdminSignupProps> = ({
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      const users = db.users.getAll();
-      const existingEmail = users.find(u => u.email.toLowerCase() === formData.email.toLowerCase());
-      
-      if (existingEmail) {
-        setError("Account Conflict: This email is already registered.");
-        setIsLoading(false);
-        triggerShake();
-        return;
-      }
-
-      // We only check for duplicate Aadhar for admins/site-managers, because they don't input mobile in this screen
-      if (rawAadhar.length > 0) {
-        const existingAadhar = users.find(u => u.aadharNumber === rawAadhar);
-        if (existingAadhar) {
-          setError("Account Conflict: This Aadhar number is already registered.");
-          setIsLoading(false);
-          triggerShake();
-          return;
-        }
-      }
-
-      const salt = bcrypt.genSaltSync(12);
-      const hashedPassword = bcrypt.hashSync(formData.password, salt);
-
-      const newUser: User = {
-        id: `mgmt-${Date.now()}`,
-        fullName: formData.fullName,
+    try {
+      await signupUser({
+        name: formData.fullName,
         email: formData.email,
-        password: hashedPassword,
-        mobile: 'SECURE_MGMT',
-        role: roleType,
-        status: UserStatus.APPROVED, 
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        mobile: '0000000000',
         workType: roleType === UserRole.ADMIN ? 'Administrator' : 'Site Manager',
-        dailySalary: 0,
-        createdAt: new Date().toISOString(),
-        aadharNumber: rawAadhar
-      };
+        age: 30,
+        aadharNumber: rawAadhar,
+        role: roleType,
+        securityCode: cleanCode,
+      });
 
-      db.users.save(newUser);
-      
       setIsSuccess(true);
-      setIsLoading(false);
       setTimeout(() => {
+        setIsLoading(false);
         onSwitchToLogin();
-      }, 2000);
-    }, 1200);
+      }, 1200);
+    } catch (error: any) {
+      setError(error.message || 'Unable to register account. Please verify your details.');
+      setIsLoading(false);
+      triggerShake();
+    }
   };
 
   const inputClasses = "w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-opacity-50 outline-none transition-all duration-300 text-sm font-medium text-slate-700 placeholder:text-slate-300 shadow-sm";

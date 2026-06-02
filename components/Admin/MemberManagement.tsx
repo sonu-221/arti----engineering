@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../services/db';
 import { UserRole, UserStatus, DutyStatus, User } from '../../types';
+import { API_BASE_URL } from '../../services/authService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MemberManagement: React.FC = () => {
@@ -15,7 +16,7 @@ const MemberManagement: React.FC = () => {
   const fetchPendingMembers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/members/pending');
+      const response = await fetch(`${API_BASE_URL}/members/pending`);
       const data = await response.json();
       if (data.members) {
         // Transform backend response to match UI expectations
@@ -86,7 +87,7 @@ const MemberManagement: React.FC = () => {
   const handleStatusChange = async (id: string, status: UserStatus) => {
     try {
       const endpoint = status === UserStatus.APPROVED ? 'approve' : 'reject';
-      const response = await fetch(`http://localhost:5000/api/members/${id}/${endpoint}`, {
+      const response = await fetch(`${API_BASE_URL}/members/${id}/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ memberId: id })

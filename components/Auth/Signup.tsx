@@ -95,6 +95,10 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onSwitchToAdminSignup,
         email: formData.email,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
+        mobile: formData.mobile,
+        workType: formData.workType,
+        age: formData.age,
+        aadharNumber: formData.aadharNumber.replace(/\s/g, ''),
       });
 
       // Show success message

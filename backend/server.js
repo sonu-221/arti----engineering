@@ -1,11 +1,16 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 const pool = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const memberRoutes = require('./routes/memberRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const projectRoutes = require('./routes/projectRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // ==================== MIDDLEWARE ====================
 app.use(cors());
@@ -14,6 +19,10 @@ app.use(express.json());
 // ==================== ROUTES ====================
 app.use('/api/auth', authRoutes);
 app.use('/api/members', memberRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // ==================== TEST ROUTE ====================
 app.get('/api/test', (req, res) => {

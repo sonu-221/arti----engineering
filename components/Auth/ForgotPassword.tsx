@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { db } from '../../services/db';
+import { checkUserEmail, resetPassword } from '../../services/authService';
 import { UI_ICONS, COMPANY_NAME } from '../../constants';
-import { UserRole } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthInfoSlider from './AuthInfoSlider';
 
@@ -42,22 +41,18 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onSwitchToLogin, onSucc
     return otp;
   };
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    setTimeout(() => {
-      const user = db.users.getByEmail(email);
-      if (!user) {
-        alert("This email is not registered in the Arti Engineering database. Please check for typos.");
-        setIsLoading(false);
-        return;
-      }
-
+    try {
+      await checkUserEmail(email);
       generateAndSendOtp(email);
       setStep('OTP');
+    } catch (error: any) {
+      alert(error.message || 'This email is not registered. Please check for typos.');
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   const handleResend = () => {
@@ -76,7 +71,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onSwitchToLogin, onSucc
     }
   };
 
-  const handleResetSubmit = (e: React.FormEvent) => {
+  const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword.length < 4) {
       alert("Security Requirement: Password must be at least 4 characters long.");
@@ -84,15 +79,14 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onSwitchToLogin, onSucc
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      const updatedUser = db.users.updatePasswordByEmail(email, newPassword);
-      if (updatedUser) {
-        onSuccess(updatedUser);
-      } else {
-        alert("A system error occurred. Please try again later.");
-      }
+    try {
+      const response = await resetPassword({ email, newPassword });
+      onSuccess(response.user);
+    } catch (error: any) {
+      alert(error.message || 'A system error occurred. Please try again later.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const inputClasses = "w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-construction-yellow focus:bg-white outline-none transition-all duration-300 transform focus:scale-[1.01] text-sm font-bold";

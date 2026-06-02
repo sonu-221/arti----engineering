@@ -61,11 +61,12 @@ const Login: React.FC<LoginProps> = ({
         fullName: response.user.name,
         email: response.user.email,
         role: response.user.role || 'MEMBER',
-        mobile: '',
-        workType: '',
-        dailySalary: 0,
+        mobile: response.user.mobile || '',
+        workType: response.user.workType || response.user.work_type || '',
+        dailySalary: response.user.dailySalary ?? response.user.daily_salary ?? 0,
         status: response.user.status || 'PENDING',
-        createdAt: new Date().toISOString(),
+        createdAt: response.user.createdAt || new Date().toISOString(),
+        aadharNumber: response.user.aadharNumber || response.user.aadhar_number || '',
       };
 
       // Save user to localStorage

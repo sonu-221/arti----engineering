@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthState, UserRole, UserStatus, DutyStatus } from './types';
 import { db } from './services/db';
+import { getUserFromStorage } from './services/authService';
 import { motion, AnimatePresence } from 'framer-motion';
 import LandingPage from './components/Auth/LandingPage';
 import Signup from './components/Auth/Signup';
@@ -25,15 +26,20 @@ const App: React.FC = () => {
   const [initialAdminRole, setInitialAdminRole] = useState<UserRole.ADMIN | UserRole.SITE_MANAGER>(UserRole.ADMIN);
 
   const syncUserData = () => {
-    const storedUser = localStorage.getItem('current_user');
-    if (storedUser) {
-      const users = db.users.getAll();
-      const parsedUser = JSON.parse(storedUser);
-      const latestUser = users.find(u => u.id === parsedUser.id);
-      
-      if (latestUser) {
-        setAuth({ user: latestUser, isAuthenticated: true });
-      }
+    const storedUser = getUserFromStorage();
+    if (!storedUser) {
+      return;
+    }
+
+    const users = db.users.getAll();
+    const latestUser = users.find(u => u.id === storedUser.id);
+
+    if (latestUser) {
+      setAuth({ user: latestUser, isAuthenticated: true });
+      localStorage.setItem('current_user', JSON.stringify(latestUser));
+    } else {
+      setAuth({ user: storedUser, isAuthenticated: true });
+      localStorage.setItem('current_user', JSON.stringify(storedUser));
     }
   };
 
@@ -94,6 +100,20 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
     setAuth({ user, isAuthenticated: true });
     localStorage.setItem('current_user', JSON.stringify(user));
+    if (user && user.id) {
+      db.users.save({
+        id: String(user.id),
+        fullName: user.fullName || user.name || '',
+        email: user.email,
+        role: user.role || 'MEMBER',
+        mobile: user.mobile || '',
+        workType: user.workType || user.work_type || '',
+        dailySalary: user.dailySalary ?? user.daily_salary ?? 0,
+        status: user.status || 'PENDING',
+        createdAt: user.createdAt || new Date().toISOString(),
+        aadharNumber: user.aadharNumber || user.aadhar_number || '',
+      });
+    }
   };
 
   const handleLogout = () => {

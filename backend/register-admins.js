@@ -3,6 +3,7 @@ const pool = require('./config/db');
 
 // Admin accounts to register
 const adminAccounts = [
+  { name: 'Sonu Admin', email: 'sonu@gmail.com', password: '12345678' },
   { name: 'Rahul Admin', email: 'rahul@gmail.com', password: '12345678' },
   { name: 'Admin One', email: 'admin@arti.com', password: 'admin123456' },
   { name: 'Admin Two', email: 'manager@arti.com', password: 'manager1234' },
