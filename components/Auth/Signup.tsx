@@ -8,11 +8,10 @@ import { motion } from 'framer-motion';
 
 interface SignupProps {
   onSwitchToLogin: () => void;
-  onSwitchToAdminSignup: () => void;
   onBackToLanding: () => void;
 }
 
-const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onSwitchToAdminSignup, onBackToLanding }) => {
+const Signup: React.FC<SignupProps> = ({ onSwitchToLogin, onBackToLanding }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     mobile: '',

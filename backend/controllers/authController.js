@@ -17,19 +17,18 @@ exports.signup = async (req, res) => {
       age,
       aadharNumber,
       role = 'MEMBER',
-      securityCode,
     } = req.body;
 
-    // Validation
-    const sanitizedRole = String(role).toUpperCase();
-    const isManagement = sanitizedRole === 'ADMIN' || sanitizedRole === 'SITE_MANAGER';
+    // Only MEMBER role allowed for signup (Worker registration)
+    // Admin accounts must be pre-registered - no admin signup allowed
+    if (role && String(role).toUpperCase() !== 'MEMBER') {
+      return res.status(403).json({ 
+        error: 'Admin registration is not available. Only workers/members can register. Admin accounts must be pre-registered.' 
+      });
+    }
 
     if (!name || !email || !password || !confirmPassword || !mobile || !workType || !age || !aadharNumber) {
       return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    if (isManagement && !securityCode) {
-      return res.status(401).json({ error: 'Security code required for management registration' });
     }
 
     if (password !== confirmPassword) {
@@ -43,14 +42,6 @@ exports.signup = async (req, res) => {
     const ageValue = Number(age);
     if (Number.isNaN(ageValue) || ageValue <= 0) {
       return res.status(400).json({ error: 'Please provide a valid age' });
-    }
-
-    if (isManagement) {
-      const normalizedCode = String(securityCode).replace(/\s/g, '').toUpperCase();
-      const validCode = sanitizedRole === 'ADMIN' ? ADMIN_AUTH_KEY : SITE_MANAGER_AUTH_KEY;
-      if (normalizedCode !== validCode) {
-        return res.status(401).json({ error: 'Invalid management security code' });
-      }
     }
 
     const connection = await pool.getConnection();
@@ -69,9 +60,10 @@ exports.signup = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const userRole = isManagement ? sanitizedRole : 'MEMBER';
-    const userStatus = isManagement ? 'APPROVED' : 'PENDING';
-    const defaultSalary = userRole === 'MEMBER' ? 0.00 : 0.00;
+    // Always register as MEMBER with PENDING status
+    const userRole = 'MEMBER';
+    const userStatus = 'PENDING';
+    const defaultSalary = 0.00;
 
     const [result] = await connection.query(
       `INSERT INTO users
@@ -83,7 +75,7 @@ exports.signup = async (req, res) => {
     connection.release();
 
     res.status(201).json({
-      message: 'User registered successfully',
+      message: 'Worker registration received. Awaiting admin approval.',
       user: {
         id: result.insertId,
         name,

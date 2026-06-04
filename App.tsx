@@ -170,7 +170,6 @@ const App: React.FC = () => {
           {authState === 'SIGNUP' && (
             <Signup 
               onSwitchToLogin={() => setAuthState('LOGIN')} 
-              onSwitchToAdminSignup={() => setAuthState('ADMIN_SIGNUP')} 
               onBackToLanding={() => setAuthState('LANDING')}
             />
           )}

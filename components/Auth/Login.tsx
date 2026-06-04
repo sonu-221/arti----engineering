@@ -22,7 +22,6 @@ const Login: React.FC<LoginProps> = ({
 }) => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const [titleClicks, setTitleClicks] = useState(0);
   const [error, setError] = useState('');
   const controls = useAnimation();
 
@@ -36,12 +35,8 @@ const Login: React.FC<LoginProps> = ({
   }, [error, controls]);
 
   const handleTitleClick = () => {
-    const newCount = titleClicks + 1;
-    setTitleClicks(newCount);
-    if (newCount >= 5) {
-      onSwitchToAdminSignup();
-      setTitleClicks(0);
-    }
+    // Admin signup disabled - only pre-registered admins can login
+    // No action on title click
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
